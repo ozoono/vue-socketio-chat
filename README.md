@@ -1,5 +1,11 @@
 # Socket.IO Chat
 
+![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?logo=vuedotjs&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?logo=socketdotio&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-22+-5FA04E?logo=nodedotjs&logoColor=white)
+
 A real-time, multi-room chat built with **Vue 3**, **Socket.IO** and **TypeScript**.
 Rooms, members and message history live on a Node server, and every message
 reaches the people in the room through a WebSocket connection.
