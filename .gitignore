@@ -1,0 +1,9 @@
+node_modules
+dist
+*.tsbuildinfo
+.env
+.env.*
+.DS_Store
+
+# Personal notes, not part of the repository
+DESCRIPTION.md

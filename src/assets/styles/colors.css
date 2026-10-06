@@ -1,0 +1,22 @@
+:root {
+  /* Brand */
+  --color-primary: #dc4165;
+  --color-secondary: #35495e;
+  --color-danger: #c0392b;
+
+  /* Surfaces and text */
+  --color-white: #fff;
+  --color-background: #f0f2f5;
+  --color-neutral: #e4e6eb;
+  --color-text-muted: #888;
+
+  /* Borders and shadows */
+  --color-border: #ddd;
+  --color-border-strong: #ccc;
+  --color-shadow: rgba(0, 0, 0, 0.15);
+  --color-backdrop: rgba(0, 0, 0, 0.4);
+
+  /* Over the dark sidebar */
+  --color-hover-on-dark: rgba(255, 255, 255, 0.1);
+  --color-divider-on-dark: rgba(255, 255, 255, 0.2);
+}
