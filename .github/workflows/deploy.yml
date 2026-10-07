@@ -1,0 +1,44 @@
+# Builds the web app on every push to main and publishes the result, together
+# with the source, to the "deploy" branch. The hosting service follows that
+# branch, so "main" never has to contain the generated dist/ folder.
+name: Build deploy branch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish the deploy branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan deploy
+          git add -A
+          git add -f dist
+          # The workflow token cannot push workflow files, and they are not
+          # needed to run the app
+          git rm -r -q --cached .github
+          git commit -q -m "Deploy ${GITHUB_SHA::7}"
+          git push --force origin deploy

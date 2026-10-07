@@ -1,5 +1,12 @@
 import { createHash, timingSafeEqual } from 'node:crypto'
-import { createServer } from 'node:http'
+import { readFile } from 'node:fs/promises'
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from 'node:http'
+import { extname, join, normalize, sep } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { Server, type Socket } from 'socket.io'
 import { EMOJIS } from '@shared/types.ts'
 import type {
@@ -12,6 +19,22 @@ import type {
 } from '@shared/types.ts'
 
 const PORT = Number(process.env.PORT) || 3000
+
+// The built web app (npm run build). The same server serves it, so the page
+// and the Socket.IO connection share one address and one port.
+const DIST_DIR = fileURLToPath(new URL('../dist', import.meta.url))
+
+const CONTENT_TYPES: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8',
+}
 
 interface RoomConfig {
   name: string
@@ -42,7 +65,54 @@ const history = new Map<string, ChatMessage[]>(
 // Usernames in use across all rooms: lowercase username -> socket id
 const usernames = new Map<string, string>()
 
-const httpServer = createServer()
+// Writes a short plain-text answer
+function sendText(res: ServerResponse, status: number, text: string) {
+  res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8' })
+  res.end(text)
+}
+
+// Serves the built web app: it answers the HTTP requests that are not Socket.IO
+async function handleRequest(req: IncomingMessage, res: ServerResponse) {
+  const { pathname } = new URL(req.url ?? '/', 'http://localhost')
+
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return sendText(res, 405, 'Method not allowed')
+  }
+
+  let requested: string
+  try {
+    requested = decodeURIComponent(pathname)
+  } catch {
+    return sendText(res, 400, 'Bad request')
+  }
+
+  const file = join(
+    DIST_DIR,
+    normalize(requested === '/' ? '/index.html' : requested),
+  )
+  // Never leave the dist folder, whatever the path looks like
+  if (!file.startsWith(DIST_DIR + sep)) return sendText(res, 404, 'Not found')
+
+  try {
+    const body = await readFile(file)
+    res.writeHead(200, {
+      'Content-Type':
+        CONTENT_TYPES[extname(file)] ?? 'application/octet-stream',
+      // Vite names the files in /assets after their content, so they can be
+      // cached for good; the rest (index.html) must always be checked again
+      'Cache-Control': pathname.startsWith('/assets/')
+        ? 'public, max-age=31536000, immutable'
+        : 'no-cache',
+      'X-Content-Type-Options': 'nosniff',
+    })
+    res.end(req.method === 'HEAD' ? undefined : body)
+  } catch {
+    const missingBuild = pathname === '/' ? ' Run "npm run build" first.' : ''
+    sendText(res, 404, `Not found.${missingBuild}`)
+  }
+}
+
+const httpServer = createServer(handleRequest)
 const io = new Server<
   ClientToServerEvents,
   ServerToClientEvents,

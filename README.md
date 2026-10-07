@@ -71,7 +71,7 @@ The server port can be changed with `PORT`. In development, Vite forwards
 | Script | What it does |
 |---|---|
 | `npm run dev` | Vue dev server with hot reload |
-| `npm run server` | Socket.IO server |
+| `npm start` | Socket.IO server; it also serves the built web app from `dist/` (`npm run server` is the same command) |
 | `npm run build` | Type-check and production build in `dist/` |
 | `npm run type-check` | `vue-tsc` for the app, `tsc` for the server and Vite config |
 | `npm run lint` | ESLint |
@@ -88,6 +88,31 @@ src/
   composables/useChat.ts   Socket connection and all the chat state
   components/              Login form, room list, members, messages, password form
 ```
+
+## Deployment
+
+The same server serves the built web app and the Socket.IO connection, so a
+deployment is a single Node process.
+
+The built app (`dist/`) is not stored in `main`. On every push to `main`, a
+GitHub Action ([`deploy.yml`](.github/workflows/deploy.yml)) builds it and
+publishes the result, together with the source, to the **`deploy`** branch.
+Deploy from that branch:
+
+```bash
+npm install
+npm start
+```
+
+Set these environment variables:
+
+| Variable | Meaning |
+|---|---|
+| `PORT` | Port to listen on (default `3000`). Most hosts set it for you |
+| `DEV_ROOM_PASSWORD` | Password of the private room. Set your own: the default (`secret`) is public |
+
+To try the production build on your machine, run `npm run build` and then
+`npm start`: the app is served at <http://localhost:3000>.
 
 ## Limitations
 
