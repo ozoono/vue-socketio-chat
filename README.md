@@ -96,8 +96,10 @@ deployment is a single Node process.
 
 The built app (`dist/`) is not stored in `main`. On every push to `main`, a
 GitHub Action ([`deploy.yml`](.github/workflows/deploy.yml)) builds it and
-publishes the result, together with the source, to the **`deploy`** branch.
-Deploy from that branch:
+publishes only what is needed to run the app to the **`deploy`** branch: the
+built web app, the server, and a minimal `package.json` with just the runtime
+dependencies (`socket.io` and `tsx`). The development tools are not installed
+on the host, and it runs on Node.js 18 or newer. Deploy from that branch:
 
 ```bash
 npm install

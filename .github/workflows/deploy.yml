@@ -1,6 +1,8 @@
-# Builds the web app on every push to main and publishes the result, together
-# with the source, to the "deploy" branch. The hosting service follows that
-# branch, so "main" never has to contain the generated dist/ folder.
+# Builds the web app on every push to main and publishes only what is needed to
+# run it (the built web app, the server and a minimal package.json) to the
+# "deploy" branch. The hosting service follows that branch, so "main" never has
+# to contain the generated dist/ folder, and the host never installs the
+# development tools.
 name: Build deploy branch
 
 on:
@@ -32,13 +34,11 @@ jobs:
 
       - name: Publish the deploy branch
         run: |
+          node scripts/make-deploy-package.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan deploy
-          git add -A
-          git add -f dist
-          # The workflow token cannot push workflow files, and they are not
-          # needed to run the app
-          git rm -r -q --cached .github
+          git rm -r -f -q --cached .
+          git add -f dist server shared tsconfig.server.json package.json
           git commit -q -m "Deploy ${GITHUB_SHA::7}"
           git push --force origin deploy
