@@ -50,7 +50,7 @@ function time(ms: number) {
       <template v-if="m.system">{{ m.text }}</template>
       <template v-else>
         <small
-          v-if="itIsMe(m.userId)"
+          v-if="!itIsMe(m.userId)"
           class="message__meta"
           >{{ m.username }}</small
         >
