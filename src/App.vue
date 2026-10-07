@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useChat } from '@/composables/useChat.ts'
 import UsernameForm from '@/components/UsernameForm.vue'
+import GithubLink from '@/components/GithubLink.vue'
 import RoomList from '@/components/RoomList.vue'
 import RoomPasswordForm from '@/components/RoomPasswordForm.vue'
 import MemberList from '@/components/MemberList.vue'
@@ -22,12 +23,16 @@ function submitPassword(password: string) {
 </script>
 
 <template>
-  <UsernameForm
-    v-if="!chat.username.value"
-    :connected="chat.connected.value"
-    :error="chat.loginError.value"
-    @login="chat.login"
-  />
+  <template v-if="!chat.username.value">
+    <UsernameForm
+      :connected="chat.connected.value"
+      :error="chat.loginError.value"
+      @login="chat.login"
+    />
+    <footer class="page-footer">
+      <GithubLink />
+    </footer>
+  </template>
 
   <div
     v-else
@@ -60,6 +65,9 @@ function submitPassword(password: string) {
         :members="chat.members.value"
         :my-id="chat.myId.value"
       />
+      <footer class="chat__sidebar-footer">
+        <GithubLink />
+      </footer>
     </aside>
 
     <main class="chat__main">
@@ -119,6 +127,8 @@ function submitPassword(password: string) {
   bottom: 0;
   left: 0;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   transform: translateX(-100%);
   width: min(80vw, 280px);
@@ -146,6 +156,12 @@ function submitPassword(password: string) {
 
 .chat__close:hover {
   background: var(--color-hover-on-dark);
+}
+
+.chat__sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--color-divider-on-dark);
+  padding: 0.8rem 1rem;
 }
 
 .chat__backdrop {
@@ -201,6 +217,13 @@ function submitPassword(password: string) {
   border-radius: 4px;
   padding: 0.1rem 0.5rem;
   background: var(--color-danger);
+}
+
+.page-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  color: var(--color-text-muted);
 }
 
 @media (width >= 768px) {
