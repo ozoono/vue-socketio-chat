@@ -99,33 +99,6 @@ src/
   components/              Login form, room list, members, messages, password form
 ```
 
-## Deployment
-
-The same server serves the built web app and the Socket.IO connection, so a
-deployment is a single Node process.
-
-The built app (`dist/`) is not stored in `main`. On every push to `main`, a
-GitHub Action ([`deploy.yml`](.github/workflows/deploy.yml)) builds it and
-publishes only what is needed to run the app to the **`deploy`** branch: the
-built web app, the server, and a minimal `package.json` with just the runtime
-dependencies (`socket.io` and `tsx`). The development tools are not installed
-on the host, and it runs on Node.js 18 or newer. Deploy from that branch:
-
-```bash
-npm install
-npm start
-```
-
-Set these environment variables:
-
-| Variable | Meaning |
-|---|---|
-| `PORT` | Port to listen on (default `3000`). Most hosts set it for you |
-| `DEV_ROOM_PASSWORD` | Password of the private room. Set your own: the default (`secret`) is public |
-
-To try the production build on your machine, run `npm run build` and then
-`npm start`: the app is served at <http://localhost:3000>.
-
 ## Limitations
 
 - State is kept in memory: it is lost when the server restarts.
