@@ -1,0 +1,12 @@
+{
+  "name": "socketio-chat",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx --tsconfig tsconfig.server.json server/index.ts"
+  },
+  "dependencies": {
+    "socket.io": "4.8.4",
+    "tsx": "4.23.15"
+  }
+}
