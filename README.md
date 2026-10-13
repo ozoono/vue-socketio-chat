@@ -18,7 +18,8 @@ Try it online: **<https://vue-socketio-chat.bonto.run/>**
 
 Open it in two browser windows, choose a different username in each one and
 chat. The `dev` room is private: its password is `secret`. If nobody has used
-the demo for a while, the first load can take a few seconds.
+the demo for a while, the first load can take a few seconds while the Node.js server 
+wakes up. Thanks for your patience!
 
 ## Features
 
