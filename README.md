@@ -49,8 +49,8 @@ wakes up. Thanks for your patience!
 **Requirements:** Node.js 22.13 or newer (developed with Node 24) and npm.
 
 ```bash
-git clone <repository-url>
-cd <repository-folder>
+git clone https://github.com/ozoono/vue-socketio-chat
+cd vue-socketio-chat
 npm install
 ```
 
